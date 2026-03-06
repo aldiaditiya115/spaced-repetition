@@ -373,11 +373,11 @@
             autocomplete="off" spellcheck="false" />
         </div>
         <div class="hint-box">
-          <strong>Cara dapat API key gratis:</strong><br/>
+          <strong>Cara dapat X-Master-Key gratis:</strong><br/>
           1. Buka <a href="https://jsonbin.io" target="_blank">jsonbin.io</a> → daftar gratis<br/>
-          2. Login → klik nama profil pojok kanan atas<br/>
-          3. Pilih <strong>API Keys</strong> → klik <strong>+ ADD API KEY</strong><br/>
-          4. Beri nama → copy API key → paste di sini
+          2. Login → klik <strong>API KEYS</strong> di sidebar kiri<br/>
+          3. Copy key di bagian <strong>X-MASTER-KEY</strong> (bukan X-Access-Key!)<br/>
+          4. Paste di kolom di atas → klik Lanjut
         </div>
         <div class="error-msg" id="apiKeyError"></div>
         <button class="btn-primary" id="btnNextStep" onclick="validateApiKey()">
@@ -563,24 +563,10 @@ async function validateApiKey() {
 
   document.getElementById('btnNextStep').disabled = true;
   document.getElementById('apiKeyError').textContent = '';
-  showLoading(true, 'Memvalidasi API key...');
 
-  // test key by listing bins
-  try {
-    const res = await fetch(`${JSONBIN_BASE}/b`, {
-      headers: { 'X-Master-Key': key }
-    });
-    if (!res.ok) throw new Error('invalid');
-  } catch(e) {
-    showLoading(false);
-    document.getElementById('btnNextStep').disabled = false;
-    document.getElementById('apiKeyError').textContent = 'API key salah atau tidak valid. Coba lagi.';
-    return;
-  }
-
+  // Simpan langsung, validasi akan ketahuan saat buat/baca bin
   API_KEY = key;
   lsSet('sm_apikey', key);
-  showLoading(false);
 
   // go to step 2
   document.getElementById('stepApiKey').style.display = 'none';
