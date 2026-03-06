@@ -42,15 +42,15 @@
     pointer-events: none; z-index: 0;
   }
 
-  /* LOGIN */
-  #loginScreen {
+  /* ── SETUP SCREEN ── */
+  .screen {
     position: fixed; inset: 0; z-index: 50;
     display: flex; align-items: center; justify-content: center;
     padding: 24px; background: var(--bg);
   }
 
-  .login-box {
-    width: 100%; max-width: 420px;
+  .modal-box {
+    width: 100%; max-width: 460px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 20px; overflow: hidden;
@@ -62,114 +62,179 @@
     to   { opacity:1; transform:translateY(0); }
   }
 
-  .login-top { padding: 36px 36px 28px; border-bottom: 1px solid var(--border); }
-
-  .login-logo {
-    font-family: 'Syne', sans-serif;
-    font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px;
+  .modal-top {
+    padding: 32px 36px 24px;
+    border-bottom: 1px solid var(--border);
   }
-  .login-logo span { color: var(--accent); }
 
-  .login-sub { font-size: 12px; color: var(--muted); line-height: 1.8; }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px; font-weight: 800; letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+  .logo span { color: var(--accent); }
 
-  .login-body { padding: 28px 36px 36px; display: flex; flex-direction: column; gap: 16px; }
+  .modal-sub { font-size: 12px; color: var(--muted); line-height: 1.8; }
 
-  .field-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 8px; }
+  .modal-body {
+    padding: 24px 36px 32px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+
+  .step-indicator {
+    display: flex; gap: 8px; margin-bottom: 4px;
+  }
+
+  .step {
+    display: flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; border-radius: 50%;
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+    border: 1px solid var(--border); color: var(--muted);
+  }
+  .step.active { background: var(--accent); color: #0d0d0f; border-color: var(--accent); }
+  .step.done { background: var(--surface2); color: var(--accent); border-color: rgba(200,240,74,0.3); }
+
+  .field-group { display: flex; flex-direction: column; gap: 8px; }
+
+  .field-label {
+    font-size: 10px; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--muted);
+  }
 
   .field-input {
     width: 100%;
     background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
     padding: 12px 16px;
-    font-family: 'DM Mono', monospace; font-size: 14px; color: var(--text);
+    font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text);
     transition: border-color 0.2s, box-shadow 0.2s;
-    letter-spacing: 1px;
   }
   .field-input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(200,240,74,0.08); }
-  .field-input::placeholder { color:var(--muted); letter-spacing:0; }
+  .field-input::placeholder { color:var(--muted); }
 
-  .login-hint {
+  .hint-box {
     font-size: 11px; color: var(--muted); line-height: 1.9;
     background: var(--surface2); border: 1px solid var(--border);
     border-radius: 10px; padding: 12px 14px;
   }
-  .login-hint strong { color: var(--accent); }
+  .hint-box strong { color: var(--accent); }
+  .hint-box a { color: var(--accent); text-decoration: none; }
+  .hint-box a:hover { text-decoration: underline; }
 
-  .btn-login {
+  .error-msg { font-size: 12px; color: var(--danger); min-height: 18px; text-align: center; }
+
+  .btn-primary {
     width: 100%;
     background: var(--accent); color: #0d0d0f;
-    border: none; border-radius: 12px;
-    padding: 15px;
+    border: none; border-radius: 12px; padding: 14px;
     font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
     letter-spacing: 1px; text-transform: uppercase;
     cursor: pointer; transition: opacity 0.2s, transform 0.15s;
   }
-  .btn-login:hover { opacity:0.9; }
-  .btn-login:active { transform:scale(0.98); }
-  .btn-login:disabled { opacity:0.4; cursor:not-allowed; }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
 
-  .login-error { font-size:12px; color:var(--danger); text-align:center; min-height:18px; }
+  /* ── APP SCREEN ── */
+  #appScreen { display: none; position: relative; z-index: 1; }
 
-  /* APP */
-  #appScreen { display:none; position:relative; z-index:1; }
-
-  .container { max-width:980px; margin:0 auto; padding:0 24px 80px; }
+  .container { max-width: 980px; margin: 0 auto; padding: 0 24px 80px; }
 
   header {
-    padding: 36px 0 28px;
+    padding: 32px 0 24px;
     display: flex; align-items: flex-end; justify-content: space-between;
-    border-bottom: 1px solid var(--border); margin-bottom: 32px;
+    border-bottom: 1px solid var(--border); margin-bottom: 28px;
     flex-wrap: wrap; gap: 12px;
   }
 
-  .logo { font-family:'Syne',sans-serif; font-weight:800; font-size:26px; letter-spacing:-1px; }
-  .logo span { color:var(--accent); }
+  .logo-sm { font-family:'Syne',sans-serif; font-weight:800; font-size:24px; letter-spacing:-1px; }
+  .logo-sm span { color: var(--accent); }
 
-  .header-right { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .header-right { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 
-  .user-chip {
-    display:flex; align-items:center; gap:8px;
+  .chip {
+    display:flex; align-items:center; gap:7px;
     background:var(--surface2); border:1px solid var(--border);
-    padding:7px 14px; border-radius:100px; font-size:12px; color:var(--muted);
+    padding:6px 13px; border-radius:100px; font-size:11px; color:var(--muted);
   }
-  .user-chip strong { color:var(--accent); font-family:'Syne',sans-serif; font-size:15px; }
+  .chip strong { color:var(--accent); font-family:'Syne',sans-serif; font-size:14px; }
+  .chip.day strong { color: var(--text); }
 
-  .day-chip {
-    background:var(--surface2); border:1px solid var(--border);
-    padding:7px 14px; border-radius:100px; font-size:12px; color:var(--muted);
-  }
-  .day-chip strong { color:var(--text); font-family:'Syne',sans-serif; font-size:15px; }
-
-  .btn-small {
+  .btn-sm {
     background:none; border:1px solid var(--border); color:var(--muted);
     font-family:'DM Mono',monospace; font-size:11px;
-    padding:7px 13px; border-radius:8px; cursor:pointer; transition:all 0.15s;
+    padding:6px 12px; border-radius:8px; cursor:pointer; transition:all 0.15s;
   }
-  .btn-small:hover { border-color:var(--danger); color:var(--danger); }
+  .btn-sm:hover { border-color:var(--danger); color:var(--danger); }
 
-  .stats-bar { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:24px; }
+  /* ULANG BANNER */
+  .ulang-banner {
+    background: var(--surface); border: 1px solid rgba(200,240,74,0.2);
+    border-radius: 14px; overflow: hidden; margin-bottom: 20px;
+  }
 
-  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 18px; }
+  .ulang-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .ulang-title-wrap { display:flex; align-items:center; gap:10px; }
+
+  .ulang-icon {
+    width:28px; height:28px;
+    background:rgba(200,240,74,0.12); border:1px solid rgba(200,240,74,0.25);
+    border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px;
+  }
+
+  .ulang-title { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:var(--text); }
+
+  .ulang-count {
+    font-size:11px; color:var(--muted);
+    background:var(--surface2); padding:4px 12px; border-radius:100px; white-space:nowrap;
+  }
+
+  .ulang-body { padding:14px 20px; }
+
+  .ulang-empty { font-size:13px; color:var(--muted); font-style:italic; text-align:center; padding:6px 0; }
+
+  .ulang-list { display:flex; flex-direction:column; gap:5px; }
+
+  .ulang-row {
+    display:flex; align-items:center; gap:10px;
+    padding:8px 12px; background:var(--surface2);
+    border-radius:8px; border:1px solid var(--border);
+    animation: slideIn 0.25s ease;
+  }
+
+  .ulang-num { font-family:'Instrument Serif',serif; font-size:15px; color:var(--accent); min-width:20px; text-align:right; }
+  .ulang-topic { font-size:13px; color:var(--text); flex:1; }
+  .ulang-from { font-size:10px; color:var(--muted); white-space:nowrap; }
+
+  /* STATS */
+  .stats-bar { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:15px 18px; }
   .stat-value { font-family:'Instrument Serif',serif; font-size:30px; color:var(--accent); line-height:1; margin-bottom:4px; }
   .stat-label { font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); }
 
-  .main-grid { display:grid; grid-template-columns:1fr 340px; gap:20px; align-items:start; }
+  /* MAIN GRID */
+  .main-grid { display:grid; grid-template-columns:1fr 340px; gap:18px; align-items:start; }
 
-  .panel { background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+  .panel { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
 
-  .panel-header { padding:18px 22px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+  .panel-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
   .panel-dot { width:8px; height:8px; border-radius:50%; background:var(--accent); animation:pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.8);} }
-  .panel-title { font-family:'Syne',sans-serif; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:var(--muted); }
+  .panel-title { font-family:'Syne',sans-serif; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:var(--muted); }
 
-  .today-label { padding:18px 22px 6px; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; }
+  .today-label { padding:16px 20px 6px; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; }
 
-  .input-area { padding:0 22px 18px; display:flex; flex-direction:column; gap:10px; }
-  .input-tags { display:flex; flex-wrap:wrap; gap:7px; min-height:0; }
+  .input-area { padding:0 20px 16px; display:flex; flex-direction:column; gap:10px; }
+  .input-tags { display:flex; flex-wrap:wrap; gap:6px; min-height:0; }
 
   .tag {
     display:flex; align-items:center; gap:6px;
     background:rgba(200,240,74,0.08); border:1px solid rgba(200,240,74,0.22);
-    color:var(--accent); padding:5px 12px 5px 14px; border-radius:100px; font-size:12px;
+    color:var(--accent); padding:4px 11px 4px 13px; border-radius:100px; font-size:12px;
     animation:tagIn 0.2s ease;
   }
   @keyframes tagIn { from{opacity:0;transform:scale(0.8) translateY(4px);}to{opacity:1;transform:scale(1) translateY(0);} }
@@ -179,7 +244,7 @@
   .add-row { display:flex; gap:8px; }
   .add-row input {
     flex:1; background:var(--surface2); border:1px solid var(--border); border-radius:10px;
-    padding:10px 14px; font-family:'DM Mono',monospace; font-size:13px; color:var(--text);
+    padding:10px 13px; font-family:'DM Mono',monospace; font-size:13px; color:var(--text);
     transition:border-color 0.2s;
   }
   .add-row input:focus { outline:none; border-color:var(--accent); }
@@ -187,16 +252,16 @@
 
   .btn-add {
     background:var(--surface2); border:1px solid var(--border); color:var(--muted);
-    border-radius:10px; padding:10px 14px;
+    border-radius:10px; padding:10px 13px;
     font-family:'DM Mono',monospace; font-size:12px; cursor:pointer; transition:all 0.15s; white-space:nowrap;
   }
   .btn-add:hover { border-color:var(--accent); color:var(--accent); }
 
-  .submit-area { padding:0 22px 22px; }
+  .submit-area { padding:0 20px 20px; }
 
   .btn-submit {
     width:100%; background:var(--accent); color:#0d0d0f;
-    border:none; border-radius:12px; padding:14px 22px;
+    border:none; border-radius:12px; padding:13px 20px;
     font-family:'Syne',sans-serif; font-size:13px; font-weight:700;
     letter-spacing:1px; text-transform:uppercase; cursor:pointer;
     transition:all 0.2s; position:relative; overflow:hidden;
@@ -206,36 +271,39 @@
   .btn-submit:active { transform:scale(0.98); }
   .btn-submit:disabled { background:var(--surface2); color:var(--muted); cursor:not-allowed; }
 
-  .review-list { padding:14px; display:flex; flex-direction:column; gap:8px; }
-  .review-empty { padding:28px 20px; text-align:center; color:var(--muted); font-size:11px; line-height:2; font-style:italic; }
+  /* REVIEW PANEL */
+  .review-list { padding:12px; display:flex; flex-direction:column; gap:7px; }
+  .review-empty { padding:24px 16px; text-align:center; color:var(--muted); font-size:11px; line-height:2; font-style:italic; }
 
   .review-item {
-    background:var(--surface2); border-radius:10px; padding:12px 14px; border-left:3px solid;
+    background:var(--surface2); border-radius:10px; padding:11px 13px; border-left:3px solid;
     animation:slideIn 0.3s ease;
   }
   @keyframes slideIn { from{opacity:0;transform:translateX(-8px);}to{opacity:1;transform:translateX(0);} }
 
-  .review-item-meta { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  .review-item-meta { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
   .interval-badge { font-family:'Syne',sans-serif; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; padding:3px 8px; border-radius:100px; }
-  .from-day { font-size:11px; color:var(--muted); }
+  .from-day { font-size:10px; color:var(--muted); }
   .review-topics { display:flex; flex-wrap:wrap; gap:5px; }
-  .review-topic { font-size:11px; background:rgba(255,255,255,0.04); border:1px solid var(--border); padding:3px 10px; border-radius:6px; }
+  .review-topic { font-size:11px; background:rgba(255,255,255,0.04); border:1px solid var(--border); padding:3px 9px; border-radius:6px; }
 
-  .history-section { margin-top:20px; }
-  .section-label { font-family:'Syne',sans-serif; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:var(--muted); margin-bottom:14px; display:flex; align-items:center; gap:12px; }
+  /* HISTORY */
+  .history-section { margin-top:18px; }
+  .section-label { font-family:'Syne',sans-serif; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:var(--muted); margin-bottom:12px; display:flex; align-items:center; gap:12px; }
   .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
 
-  .history-grid { display:flex; flex-direction:column; gap:10px; }
+  .history-grid { display:flex; flex-direction:column; gap:9px; }
   .history-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:border-color 0.2s; }
   .history-card:hover { border-color:rgba(200,240,74,0.25); }
-  .history-card-header { padding:13px 18px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); }
-  .history-day-num { font-family:'Instrument Serif',serif; font-size:20px; color:var(--accent); line-height:1; }
+  .history-card-header { padding:12px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); }
+  .history-day-num { font-family:'Instrument Serif',serif; font-size:19px; color:var(--accent); line-height:1; }
   .history-day-label { font-size:11px; color:var(--muted); margin-top:2px; }
   .history-count { font-size:11px; color:var(--muted); background:var(--surface2); padding:4px 10px; border-radius:100px; }
-  .history-card-body { padding:13px 18px; display:flex; flex-wrap:wrap; gap:7px; }
-  .history-tag { font-size:12px; background:rgba(255,255,255,0.04); border:1px solid var(--border); padding:5px 12px; border-radius:8px; transition:background 0.15s; }
+  .history-card-body { padding:12px 16px; display:flex; flex-wrap:wrap; gap:6px; }
+  .history-tag { font-size:12px; background:rgba(255,255,255,0.04); border:1px solid var(--border); padding:4px 11px; border-radius:7px; transition:background 0.15s; }
   .history-tag:hover { background:rgba(255,255,255,0.08); }
 
+  /* INTERVAL COLORS */
   .c1  { border-color:var(--r1);  background:rgba(200,240,74,0.05); }
   .c1  .interval-badge { background:rgba(200,240,74,0.15); color:var(--r1); }
   .c3  { border-color:var(--r3);  background:rgba(74,200,240,0.05); }
@@ -247,173 +315,119 @@
   .c60 { border-color:var(--r60); background:rgba(240,164,74,0.05); }
   .c60 .interval-badge { background:rgba(240,164,74,0.15); color:var(--r60); }
 
-  .legend { display:flex; flex-wrap:wrap; gap:10px; padding:12px 16px; border-top:1px solid var(--border); }
-  .legend-item { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--muted); }
+  .legend { display:flex; flex-wrap:wrap; gap:10px; padding:10px 14px; border-top:1px solid var(--border); }
+  .legend-item { display:flex; align-items:center; gap:6px; font-size:10px; color:var(--muted); }
   .legend-dot { width:7px; height:7px; border-radius:50%; }
 
-  .loading-overlay { position:fixed;inset:0;z-index:200;background:rgba(13,13,15,0.88);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px); }
-  .spinner { width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite; }
+  /* LOADING */
+  .loading-overlay { position:fixed;inset:0;z-index:200;background:rgba(13,13,15,0.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;backdrop-filter:blur(4px); }
+  .spinner { width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite; }
+  .loading-text { font-size:12px; color:var(--muted); }
   @keyframes spin { to{transform:rotate(360deg);} }
 
+  /* TOAST */
   .toast { position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--accent);color:#0d0d0f;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;padding:11px 22px;border-radius:100px;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:300;white-space:nowrap; }
   .toast.show { transform:translateX(-50%) translateY(0); }
   .toast.error { background:var(--danger); color:#fff; }
 
-  .no-history { text-align:center;padding:36px 20px;color:var(--muted);font-size:12px;font-style:italic;line-height:2; }
-
-  /* ULANG HARI INI BANNER */
-  .ulang-banner {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    margin-bottom: 24px;
-  }
-
-  .ulang-header {
-    padding: 16px 22px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  .ulang-title-wrap { display: flex; align-items: center; gap: 10px; }
-
-  .ulang-icon {
-    width: 28px; height: 28px;
-    background: rgba(200,240,74,0.12);
-    border: 1px solid rgba(200,240,74,0.25);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
-  }
-
-  .ulang-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px; font-weight: 700;
-    color: var(--text);
-  }
-
-  .ulang-count {
-    font-size: 11px; color: var(--muted);
-    background: var(--surface2);
-    padding: 4px 12px; border-radius: 100px;
-    white-space: nowrap;
-  }
-
-  .ulang-body { padding: 18px 22px; }
-
-  .ulang-empty {
-    font-size: 13px; color: var(--muted);
-    font-style: italic; text-align: center;
-    padding: 8px 0;
-  }
-
-  .ulang-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .ulang-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    background: var(--surface2);
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    animation: slideIn 0.25s ease;
-  }
-
-  .ulang-num {
-    font-family: 'Instrument Serif', serif;
-    font-size: 15px;
-    color: var(--accent);
-    min-width: 20px;
-    text-align: right;
-  }
-
-  .ulang-topic {
-    font-size: 13px;
-    color: var(--text);
-    flex: 1;
-  }
-
-  .ulang-from {
-    font-size: 10px;
-    color: var(--muted);
-    white-space: nowrap;
-  }
+  .no-history { text-align:center;padding:32px 20px;color:var(--muted);font-size:12px;font-style:italic;line-height:2; }
 
   @media (max-width:700px) {
     .main-grid { grid-template-columns:1fr; }
     .stats-bar { grid-template-columns:repeat(3,1fr); }
     .stat-value { font-size:22px; }
-    .login-top, .login-body { padding-left:24px; padding-right:24px; }
+    .modal-top, .modal-body { padding-left:22px; padding-right:22px; }
   }
 </style>
 </head>
 <body>
 
-<div class="loading-overlay" id="loadingOverlay">
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay" style="display:none;">
   <div class="spinner"></div>
+  <div class="loading-text" id="loadingText">Menghubungkan...</div>
 </div>
 
-<!-- LOGIN -->
-<div id="loginScreen" style="display:none;">
-  <div class="login-box">
-    <div class="login-top">
-      <div class="login-logo">Spaced<span>Mind</span></div>
-      <div class="login-sub">
-        Spaced repetition dengan interval 1 · 3 · 7 · 14 · 60 hari.<br/>
-        Progress tersimpan di cloud — bisa diakses dari device mana saja.
+<!-- ── STEP 1: API KEY SETUP ── -->
+<div class="screen" id="setupScreen">
+  <div class="modal-box">
+    <div class="modal-top">
+      <div class="logo">Spaced<span>Mind</span></div>
+      <div class="modal-sub">
+        Sebelum mulai, kamu perlu API key gratis dari JSONBin.io<br/>
+        untuk menyimpan data di cloud secara permanen.
       </div>
     </div>
-    <div class="login-body">
-      <div>
-        <div class="field-label">Passphrase kamu</div>
-        <input class="field-input" id="passphraseInput" type="text"
-          placeholder="contoh: belajar-rajin-2024"
-          autocomplete="off" spellcheck="false"
-          onkeydown="if(event.key==='Enter') loginOrRegister()" />
+    <div class="modal-body">
+      <div class="step-indicator">
+        <div class="step active" id="step1dot">1</div>
+        <div class="step" id="step2dot">2</div>
       </div>
 
-      <div class="login-hint">
-        <strong>Pengguna baru?</strong> Ketik passphrase unik lalu klik masuk — akun otomatis dibuat.<br/>
-        <strong>Sudah punya akun?</strong> Masukkan passphrase yang sama untuk lanjutkan progressmu.<br/>
-        ⚠️ <strong>Simpan passphrase-mu!</strong> Tidak ada recovery jika lupa.
+      <!-- STEP 1 -->
+      <div id="stepApiKey">
+        <div class="field-group">
+          <div class="field-label">JSONBin.io API Key</div>
+          <input class="field-input" id="apiKeyInput" type="text"
+            placeholder="$2a$10$xxxxxxxxxxxxxxxxxxxx..."
+            autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="hint-box">
+          <strong>Cara dapat API key gratis:</strong><br/>
+          1. Buka <a href="https://jsonbin.io" target="_blank">jsonbin.io</a> → daftar gratis<br/>
+          2. Login → klik nama profil pojok kanan atas<br/>
+          3. Pilih <strong>API Keys</strong> → klik <strong>+ ADD API KEY</strong><br/>
+          4. Beri nama → copy API key → paste di sini
+        </div>
+        <div class="error-msg" id="apiKeyError"></div>
+        <button class="btn-primary" id="btnNextStep" onclick="validateApiKey()">
+          Lanjut →
+        </button>
       </div>
 
-      <div class="login-error" id="loginError"></div>
+      <!-- STEP 2 -->
+      <div id="stepPassphrase" style="display:none;">
+        <div class="field-group">
+          <div class="field-label">Passphrase kamu</div>
+          <input class="field-input" id="passphraseInput" type="text"
+            placeholder="contoh: belajar-rajin-2024"
+            autocomplete="off" spellcheck="false"
+            onkeydown="if(event.key==='Enter') loginOrRegister()" />
+        </div>
+        <div class="hint-box">
+          <strong>Pengguna baru?</strong> Ketik passphrase unik → akun otomatis dibuat.<br/>
+          <strong>Sudah punya akun?</strong> Masukkan passphrase yang sama.<br/>
+          ⚠️ <strong>Simpan passphrase-mu!</strong> Tidak ada recovery jika lupa.
+        </div>
+        <div class="error-msg" id="loginError"></div>
+        <button class="btn-primary" id="btnLogin" onclick="loginOrRegister()">
+          Masuk / Daftar
+        </button>
+      </div>
 
-      <button class="btn-login" id="loginBtn" onclick="loginOrRegister()">
-        Masuk / Daftar
-      </button>
     </div>
   </div>
 </div>
 
-<!-- APP -->
+<!-- ── APP SCREEN ── -->
 <div id="appScreen">
   <div class="container">
+
     <header>
       <div>
-        <div class="logo">Spaced<span>Mind</span></div>
-        <div style="font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:1px;">SPACED REPETITION · 1 · 3 · 7 · 14 · 60</div>
+        <div class="logo-sm">Spaced<span>Mind</span></div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:1px;">SPACED REPETITION · 1 · 3 · 7 · 14 · 60</div>
       </div>
       <div class="header-right">
-        <div class="user-chip">🔑 <strong id="displayPassphrase"></strong></div>
-        <div class="day-chip">Hari ke&#8209;<strong id="currentDayDisplay">1</strong></div>
-        <button class="btn-small" onclick="logout()">keluar</button>
-        <button class="btn-small" onclick="resetAll()">reset data</button>
+        <div class="chip">🔑 <strong id="displayPassphrase"></strong></div>
+        <div class="chip day">Hari ke&#8209;<strong id="currentDayDisplay">1</strong></div>
+        <button class="btn-sm" onclick="logout()">keluar</button>
+        <button class="btn-sm" onclick="resetAll()">reset data</button>
       </div>
     </header>
 
     <!-- ULANG HARI INI -->
-    <div class="ulang-banner" id="ulangBanner">
+    <div class="ulang-banner">
       <div class="ulang-header">
         <div class="ulang-title-wrap">
           <div class="ulang-icon">🔁</div>
@@ -428,6 +442,7 @@
       </div>
     </div>
 
+    <!-- STATS -->
     <div class="stats-bar">
       <div class="stat-card"><div class="stat-value" id="statTotalDays">0</div><div class="stat-label">Total Hari</div></div>
       <div class="stat-card"><div class="stat-value" id="statTotalTopics">0</div><div class="stat-label">Total Topik</div></div>
@@ -435,6 +450,7 @@
     </div>
 
     <div class="main-grid">
+      <!-- LEFT -->
       <div>
         <div class="panel">
           <div class="panel-header"><div class="panel-dot"></div><div class="panel-title">Input Topik Baru</div></div>
@@ -459,9 +475,10 @@
         </div>
       </div>
 
+      <!-- RIGHT -->
       <div>
         <div class="panel">
-          <div class="panel-header"><div class="panel-title">Review Hari Ini</div></div>
+          <div class="panel-header"><div class="panel-title">Detail Review</div></div>
           <div id="reviewList" class="review-list">
             <div class="review-empty">Review akan muncul setelah beberapa hari berlalu.</div>
           </div>
@@ -475,106 +492,223 @@
         </div>
       </div>
     </div>
+
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CONSTANTS ────────────────────────────────────────────
-const INTERVALS = [1, 3, 7, 14, 60];
+// ── CONSTANTS ─────────────────────────────────────────────
+const JSONBIN_BASE = 'https://api.jsonbin.io/v3';
+const INTERVALS    = [1, 3, 7, 14, 60];
 const INTERVAL_LABELS = {1:'Ulang +1', 3:'Ulang +3', 7:'Ulang +7', 14:'Ulang +14', 60:'Ulang +60'};
 const INTERVAL_CLASS  = {1:'c1', 3:'c3', 7:'c7', 14:'c14', 60:'c60'};
 
-let currentPassphrase = null;
-let state = null;
-let pendingTags = [];
+let API_KEY       = '';
+let currentUser   = null; // { passphrase, binId }
+let state         = null;
+let pendingTags   = [];
 
-// ── STORAGE ──────────────────────────────────────────────
-function makeKey(pp) {
-  return 'spacedmind-u-' + pp.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-_]/g,'').slice(0, 80);
+// ── LOCAL PERSIST (only API key + binId map, NOT data) ────
+function lsGet(k) { try { return localStorage.getItem(k); } catch(e) { return null; } }
+function lsSet(k,v){ try { localStorage.setItem(k, v); } catch(e) {} }
+function lsDel(k)  { try { localStorage.removeItem(k); } catch(e) {} }
+
+// ── JSONBIN API ───────────────────────────────────────────
+async function jbCreate(data) {
+  const res = await fetch(`${JSONBIN_BASE}/b`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Master-Key': API_KEY,
+      'X-Bin-Private': 'true',
+      'X-Bin-Name': 'sm-' + currentUser.passphrase.slice(0,20)
+    },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error('create failed ' + res.status);
+  const j = await res.json();
+  return j.metadata.id;
 }
 
-async function cloudGet(key) {
-  try {
-    const res = await window.storage.get(key, true);
-    if (!res) return null;
-    return JSON.parse(res.value);
-  } catch(e) { return null; }
+async function jbRead(binId) {
+  const res = await fetch(`${JSONBIN_BASE}/b/${binId}/latest`, {
+    headers: { 'X-Master-Key': API_KEY }
+  });
+  if (!res.ok) throw new Error('read failed ' + res.status);
+  const j = await res.json();
+  return j.record;
 }
 
-async function cloudSet(key, data) {
-  try {
-    await window.storage.set(key, JSON.stringify(data), true);
-    return true;
-  } catch(e) { return false; }
+async function jbUpdate(binId, data) {
+  const res = await fetch(`${JSONBIN_BASE}/b/${binId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Master-Key': API_KEY
+    },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error('update failed ' + res.status);
 }
 
-async function saveCloud() {
-  const ok = await cloudSet(makeKey(currentPassphrase), state);
-  if (!ok) showToast('Gagal menyimpan ke cloud!', true);
-}
-
-// ── AUTH ─────────────────────────────────────────────────
-async function loginOrRegister() {
-  const raw = document.getElementById('passphraseInput').value.trim();
-  if (raw.length < 3) { setLoginError('Passphrase minimal 3 karakter.'); return; }
-
-  document.getElementById('loginBtn').disabled = true;
-  setLoginError('');
-  showLoading(true);
-
-  const key = makeKey(raw);
-  let data = await cloudGet(key);
-  const isNew = !data;
-
-  if (isNew) {
-    data = { currentDay: 1, days: {}, createdAt: Date.now() };
-    const ok = await cloudSet(key, data);
-    if (!ok) {
-      showLoading(false);
-      document.getElementById('loginBtn').disabled = false;
-      setLoginError('Gagal membuat akun. Coba lagi.');
-      return;
-    }
+// ── SETUP FLOW ────────────────────────────────────────────
+async function validateApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key || key.length < 20) {
+    document.getElementById('apiKeyError').textContent = 'API key tidak valid.';
+    return;
   }
 
-  currentPassphrase = raw;
-  state = data;
-  try { sessionStorage.setItem('sm_pp', raw); } catch(e) {}
+  document.getElementById('btnNextStep').disabled = true;
+  document.getElementById('apiKeyError').textContent = '';
+  showLoading(true, 'Memvalidasi API key...');
 
+  // test key by listing bins
+  try {
+    const res = await fetch(`${JSONBIN_BASE}/b`, {
+      headers: { 'X-Master-Key': key }
+    });
+    if (!res.ok) throw new Error('invalid');
+  } catch(e) {
+    showLoading(false);
+    document.getElementById('btnNextStep').disabled = false;
+    document.getElementById('apiKeyError').textContent = 'API key salah atau tidak valid. Coba lagi.';
+    return;
+  }
+
+  API_KEY = key;
+  lsSet('sm_apikey', key);
   showLoading(false);
-  document.getElementById('loginScreen').style.display = 'none';
+
+  // go to step 2
+  document.getElementById('stepApiKey').style.display = 'none';
+  document.getElementById('stepPassphrase').style.display = 'block';
+  document.getElementById('step1dot').className = 'step done';
+  document.getElementById('step2dot').className = 'step active';
+  document.getElementById('btnNextStep').disabled = false;
+  document.getElementById('passphraseInput').focus();
+}
+
+async function loginOrRegister() {
+  const raw = document.getElementById('passphraseInput').value.trim();
+  if (raw.length < 3) {
+    document.getElementById('loginError').textContent = 'Passphrase minimal 3 karakter.';
+    return;
+  }
+
+  document.getElementById('btnLogin').disabled = true;
+  document.getElementById('loginError').textContent = '';
+  showLoading(true, 'Mencari akun...');
+
+  const ppKey = 'sm_bin_' + sanitize(raw);
+  let binId = lsGet(ppKey);
+  let isNew = false;
+
+  currentUser = { passphrase: raw, binId: null };
+
+  try {
+    if (binId) {
+      // verify bin still exists
+      try {
+        state = await jbRead(binId);
+        currentUser.binId = binId;
+      } catch(e) {
+        // bin deleted, create new
+        binId = null;
+      }
+    }
+
+    if (!binId) {
+      // search existing bins by name
+      showLoading(true, 'Mencari data lama...');
+      const searchRes = await fetch(`${JSONBIN_BASE}/b?page=1`, {
+        headers: { 'X-Master-Key': API_KEY }
+      });
+
+      if (searchRes.ok) {
+        const bins = await searchRes.json();
+        const match = bins.find && bins.find(b =>
+          b.snippetMeta && b.snippetMeta.name === 'sm-' + raw.slice(0,20)
+        );
+        if (match) {
+          binId = match.id || match.snippetMeta?.id;
+        }
+      }
+
+      if (binId) {
+        state = await jbRead(binId);
+        currentUser.binId = binId;
+        lsSet(ppKey, binId);
+      } else {
+        // brand new user
+        isNew = true;
+        state = { currentDay: 1, days: {}, createdAt: Date.now() };
+        showLoading(true, 'Membuat akun baru...');
+        binId = await jbCreate(state);
+        currentUser.binId = binId;
+        lsSet(ppKey, binId);
+      }
+    }
+  } catch(e) {
+    showLoading(false);
+    document.getElementById('btnLogin').disabled = false;
+    document.getElementById('loginError').textContent = 'Gagal: ' + e.message + '. Periksa API key.';
+    return;
+  }
+
+  lsSet('sm_lastpp', raw);
+  showLoading(false);
+  document.getElementById('setupScreen').style.display = 'none';
   document.getElementById('appScreen').style.display = 'block';
   document.getElementById('displayPassphrase').textContent = raw;
-  document.getElementById('loginBtn').disabled = false;
+  document.getElementById('btnLogin').disabled = false;
+
   renderAll();
   showToast(isNew ? 'Akun baru dibuat! Selamat datang 🎉' : 'Selamat datang kembali!', false);
 }
 
-function setLoginError(msg) {
-  document.getElementById('loginError').textContent = msg;
+function sanitize(s) {
+  return s.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-_]/g,'').slice(0,40);
 }
 
+// ── SAVE ─────────────────────────────────────────────────
+async function saveCloud() {
+  try {
+    await jbUpdate(currentUser.binId, state);
+  } catch(e) {
+    showToast('Gagal menyimpan! ' + e.message, true);
+  }
+}
+
+// ── LOGOUT / RESET ────────────────────────────────────────
 function logout() {
-  currentPassphrase = null; state = null; pendingTags = [];
-  try { sessionStorage.removeItem('sm_pp'); } catch(e) {}
+  currentUser = null; state = null; pendingTags = [];
   document.getElementById('appScreen').style.display = 'none';
-  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('setupScreen').style.display = 'flex';
+  // go back to step 2 (api key already saved)
+  document.getElementById('stepApiKey').style.display = 'none';
+  document.getElementById('stepPassphrase').style.display = 'block';
+  document.getElementById('step1dot').className = 'step done';
+  document.getElementById('step2dot').className = 'step active';
   document.getElementById('passphraseInput').value = '';
+  document.getElementById('loginError').textContent = '';
 }
 
 async function resetAll() {
-  if (!confirm('Reset semua data progressmu? Ini tidak bisa dibatalkan!')) return;
+  if (!confirm('Reset semua data progressmu? Tidak bisa dibatalkan!')) return;
+  showLoading(true, 'Mereset data...');
   state = { currentDay: 1, days: {}, createdAt: Date.now() };
   pendingTags = [];
   await saveCloud();
+  showLoading(false);
   renderAll();
   showToast('Data direset.', false);
 }
 
 // ── TAGS ─────────────────────────────────────────────────
-function handleKey(e) { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }
+function handleKey(e) { if (e.key==='Enter'){e.preventDefault();addTag();} }
 
 function addTag() {
   const input = document.getElementById('topicInput');
@@ -587,20 +721,20 @@ function addTag() {
   input.focus();
 }
 
-function removeTag(idx) { pendingTags.splice(idx, 1); renderTags(); }
+function removeTag(idx) { pendingTags.splice(idx,1); renderTags(); }
 
 function renderTags() {
-  document.getElementById('tagContainer').innerHTML = pendingTags.map((t,i) =>
+  document.getElementById('tagContainer').innerHTML = pendingTags.map((t,i)=>
     `<div class="tag">${esc(t)}<button class="tag-remove" onclick="removeTag(${i})">×</button></div>`
   ).join('');
   document.getElementById('submitBtn').disabled = pendingTags.length === 0;
 }
 
-// ── SUBMIT ────────────────────────────────────────────────
+// ── SUBMIT DAY ────────────────────────────────────────────
 async function submitDay() {
   if (!pendingTags.length) return;
   document.getElementById('submitBtn').disabled = true;
-  showLoading(true);
+  showLoading(true, 'Menyimpan ke cloud...');
 
   const day = state.currentDay;
   state.days[day] = { topics: [...pendingTags], timestamp: Date.now() };
@@ -623,37 +757,6 @@ function renderAll() {
   renderHistory();
 }
 
-function renderUlang() {
-  const cur = state.currentDay;
-  const allTopics = [];
-
-  INTERVALS.forEach(interval => {
-    const t = cur - interval;
-    if (state.days[t] && state.days[t].topics.length) {
-      state.days[t].topics.forEach(topic => {
-        allTopics.push({ topic, fromDay: t, interval });
-      });
-    }
-  });
-
-  const countEl = document.getElementById('ulangCount');
-  const listEl  = document.getElementById('ulangList');
-
-  countEl.textContent = allTopics.length + ' topik';
-
-  if (!allTopics.length) {
-    listEl.innerHTML = `<div class="ulang-empty">—</div>`;
-    return;
-  }
-
-  listEl.innerHTML = allTopics.map((item, i) => `
-    <div class="ulang-row">
-      <div class="ulang-num">${i + 1}.</div>
-      <div class="ulang-topic">${esc(item.topic)}</div>
-      <div class="ulang-from">Hari ${item.fromDay} · +${item.interval}hr</div>
-    </div>`).join('');
-}
-
 function renderStats() {
   const days = Object.keys(state.days).map(Number);
   let topics = 0;
@@ -661,8 +764,30 @@ function renderStats() {
   document.getElementById('statTotalDays').textContent = days.length;
   document.getElementById('statTotalTopics').textContent = topics;
   let rev = 0;
-  INTERVALS.forEach(i => { const t = state.currentDay - i; if (state.days[t]) rev += state.days[t].topics.length; });
+  INTERVALS.forEach(i => { const t=state.currentDay-i; if(state.days[t]) rev+=state.days[t].topics.length; });
   document.getElementById('statTodayReview').textContent = rev;
+}
+
+function renderUlang() {
+  const cur = state.currentDay;
+  const all = [];
+  INTERVALS.forEach(interval => {
+    const t = cur - interval;
+    if (state.days[t] && state.days[t].topics.length)
+      state.days[t].topics.forEach(topic => all.push({ topic, fromDay: t, interval }));
+  });
+
+  document.getElementById('ulangCount').textContent = all.length + ' topik';
+
+  const el = document.getElementById('ulangList');
+  if (!all.length) { el.innerHTML = `<div class="ulang-empty">—</div>`; return; }
+
+  el.innerHTML = all.map((item,i) => `
+    <div class="ulang-row">
+      <div class="ulang-num">${i+1}.</div>
+      <div class="ulang-topic">${esc(item.topic)}</div>
+      <div class="ulang-from">Hari ${item.fromDay} · +${item.interval}hr</div>
+    </div>`).join('');
 }
 
 function renderReview() {
@@ -673,9 +798,10 @@ function renderReview() {
     if (state.days[t] && state.days[t].topics.length)
       items.push({ interval, day: t, topics: state.days[t].topics });
   });
+
   const el = document.getElementById('reviewList');
   if (!items.length) {
-    el.innerHTML = `<div class="review-empty">Tidak ada review hari ini.<br/>Submit topik dan tunggu intervalnya.</div>`;
+    el.innerHTML = `<div class="review-empty">Tidak ada review hari ini.</div>`;
     return;
   }
   el.innerHTML = items.map(item => `
@@ -709,42 +835,41 @@ function renderHistory() {
 }
 
 // ── UTILS ─────────────────────────────────────────────────
-function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 let _toast;
 function showToast(msg, err) {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.className = 'toast' + (err ? ' error' : '');
+  t.className = 'toast' + (err?' error':'');
   t.classList.add('show');
   clearTimeout(_toast);
-  _toast = setTimeout(() => t.classList.remove('show'), 3000);
+  _toast = setTimeout(()=>t.classList.remove('show'), 3200);
 }
 
-function showLoading(v) { document.getElementById('loadingOverlay').style.display = v ? 'flex' : 'none'; }
+function showLoading(v, txt) {
+  document.getElementById('loadingOverlay').style.display = v ? 'flex' : 'none';
+  if (txt) document.getElementById('loadingText').textContent = txt;
+}
 
 // ── INIT ──────────────────────────────────────────────────
-async function init() {
-  showLoading(true);
-  let saved = null;
-  try { saved = sessionStorage.getItem('sm_pp'); } catch(e) {}
+function init() {
+  // restore api key if saved
+  const savedKey = lsGet('sm_apikey');
+  if (savedKey) {
+    API_KEY = savedKey;
+    document.getElementById('apiKeyInput').value = savedKey;
+    // skip to step 2
+    document.getElementById('stepApiKey').style.display = 'none';
+    document.getElementById('stepPassphrase').style.display = 'block';
+    document.getElementById('step1dot').className = 'step done';
+    document.getElementById('step2dot').className = 'step active';
 
-  if (saved) {
-    const data = await cloudGet(makeKey(saved));
-    if (data) {
-      currentPassphrase = saved;
-      state = data;
-      showLoading(false);
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('appScreen').style.display = 'block';
-      document.getElementById('displayPassphrase').textContent = saved;
-      renderAll();
-      return;
-    }
+    // restore last passphrase for convenience
+    const lastPP = lsGet('sm_lastpp');
+    if (lastPP) document.getElementById('passphraseInput').value = lastPP;
   }
-
-  showLoading(false);
-  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('setupScreen').style.display = 'flex';
 }
 
 init();
