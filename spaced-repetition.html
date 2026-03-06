@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SpacedMind — Spaced Repetition System</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #141418;
+    --surface2: #1c1c22;
+    --border: #2a2a35;
+    --accent: #c8f04a;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --danger: #f04a6b;
+    --r1: #c8f04a;
+    --r3: #4ac8f0;
+    --r7: #c84af0;
+    --r14: #f04a6b;
+    --r60: #f0a44a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(200,240,74,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,240,74,0.025) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; z-index: 0;
+  }
+
+  /* LOGIN */
+  #loginScreen {
+    position: fixed; inset: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px; background: var(--bg);
+  }
+
+  .login-box {
+    width: 100%; max-width: 420px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px; overflow: hidden;
+    animation: fadeUp 0.4s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  .login-top { padding: 36px 36px 28px; border-bottom: 1px solid var(--border); }
+
+  .login-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px;
+  }
+  .login-logo span { color: var(--accent); }
+
+  .login-sub { font-size: 12px; color: var(--muted); line-height: 1.8; }
+
+  .login-body { padding: 28px 36px 36px; display: flex; flex-direction: column; gap: 16px; }
+
+  .field-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 8px; }
+
+  .field-input {
+    width: 100%;
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 16px;
+    font-family: 'DM Mono', monospace; font-size: 14px; color: var(--text);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    letter-spacing: 1px;
+  }
+  .field-input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(200,240,74,0.08); }
+  .field-input::placeholder { color:var(--muted); letter-spacing:0; }
+
+  .login-hint {
+    font-size: 11px; color: var(--muted); line-height: 1.9;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px;
+  }
+  .login-hint strong { color: var(--accent); }
+
+  .btn-login {
+    width: 100%;
+    background: var(--accent); color: #0d0d0f;
+    border: none; border-radius: 12px;
+    padding: 15px;
+    font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    cursor: pointer; transition: opacity 0.2s, transform 0.15s;
+  }
+  .btn-login:hover { opacity:0.9; }
+  .btn-login:active { transform:scale(0.98); }
+  .btn-login:disabled { opacity:0.4; cursor:not-allowed; }
+
+  .login-error { font-size:12px; color:var(--danger); text-align:center; min-height:18px; }
+
+  /* APP */
+  #appScreen { display:none; position:relative; z-index:1; }
+
+  .container { max-width:980px; margin:0 auto; padding:0 24px 80px; }
+
+  header {
+    padding: 36px 0 28px;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    border-bottom: 1px solid var(--border); margin-bottom: 32px;
+    flex-wrap: wrap; gap: 12px;
+  }
+
+  .logo { font-family:'Syne',sans-serif; font-weight:800; font-size:26px; letter-spacing:-1px; }
+  .logo span { color:var(--accent); }
+
+  .header-right { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+
+  .user-chip {
+    display:flex; align-items:center; gap:8px;
+    background:var(--surface2); border:1px solid var(--border);
+    padding:7px 14px; border-radius:100px; font-size:12px; color:var(--muted);
+  }
+  .user-chip strong { color:var(--accent); font-family:'Syne',sans-serif; font-size:15px; }
+
+  .day-chip {
+    background:var(--surface2); border:1px solid var(--border);
+    padding:7px 14px; border-radius:100px; font-size:12px; color:var(--muted);
+  }
+  .day-chip strong { color:var(--text); font-family:'Syne',sans-serif; font-size:15px; }
+
+  .btn-small {
+    background:none; border:1px solid var(--border); color:var(--muted);
+    font-family:'DM Mono',monospace; font-size:11px;
+    padding:7px 13px; border-radius:8px; cursor:pointer; transition:all 0.15s;
+  }
+  .btn-small:hover { border-color:var(--danger); color:var(--danger); }
+
+  .stats-bar { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:24px; }
+
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 18px; }
+  .stat-value { font-family:'Instrument Serif',serif; font-size:30px; color:var(--accent); line-height:1; margin-bottom:4px; }
+  .stat-label { font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); }
+
+  .main-grid { display:grid; grid-template-columns:1fr 340px; gap:20px; align-items:start; }
+
+  .panel { background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+
+  .panel-header { padding:18px 22px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+  .panel-dot { width:8px; height:8px; border-radius:50%; background:var(--accent); animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.8);} }
+  .panel-title { font-family:'Syne',sans-serif; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:var(--muted); }
+
+  .today-label { padding:18px 22px 6px; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; }
+
+  .input-area { padding:0 22px 18px; display:flex; flex-direction:column; gap:10px; }
+  .input-tags { display:flex; flex-wrap:wrap; gap:7px; min-height:0; }
+
+  .tag {
+    display:flex; align-items:center; gap:6px;
+    background:rgba(200,240,74,0.08); border:1px solid rgba(200,240,74,0.22);
+    color:var(--accent); padding:5px 12px 5px 14px; border-radius:100px; font-size:12px;
+    animation:tagIn 0.2s ease;
+  }
+  @keyframes tagIn { from{opacity:0;transform:scale(0.8) translateY(4px);}to{opacity:1;transform:scale(1) translateY(0);} }
+  .tag-remove { background:none;border:none;color:var(--accent);cursor:pointer;font-size:14px;line-height:1;opacity:0.6;transition:opacity 0.15s;padding:0; }
+  .tag-remove:hover { opacity:1; }
+
+  .add-row { display:flex; gap:8px; }
+  .add-row input {
+    flex:1; background:var(--surface2); border:1px solid var(--border); border-radius:10px;
+    padding:10px 14px; font-family:'DM Mono',monospace; font-size:13px; color:var(--text);
+    transition:border-color 0.2s;
+  }
+  .add-row input:focus { outline:none; border-color:var(--accent); }
+  .add-row input::placeholder { color:var(--muted); }
+
+  .btn-add {
+    background:var(--surface2); border:1px solid var(--border); color:var(--muted);
+    border-radius:10px; padding:10px 14px;
+    font-family:'DM Mono',monospace; font-size:12px; cursor:pointer; transition:all 0.15s; white-space:nowrap;
+  }
+  .btn-add:hover { border-color:var(--accent); color:var(--accent); }
+
+  .submit-area { padding:0 22px 22px; }
+
+  .btn-submit {
+    width:100%; background:var(--accent); color:#0d0d0f;
+    border:none; border-radius:12px; padding:14px 22px;
+    font-family:'Syne',sans-serif; font-size:13px; font-weight:700;
+    letter-spacing:1px; text-transform:uppercase; cursor:pointer;
+    transition:all 0.2s; position:relative; overflow:hidden;
+  }
+  .btn-submit::after { content:'';position:absolute;inset:0;background:white;opacity:0;transition:opacity 0.2s; }
+  .btn-submit:hover::after { opacity:0.1; }
+  .btn-submit:active { transform:scale(0.98); }
+  .btn-submit:disabled { background:var(--surface2); color:var(--muted); cursor:not-allowed; }
+
+  .review-list { padding:14px; display:flex; flex-direction:column; gap:8px; }
+  .review-empty { padding:28px 20px; text-align:center; color:var(--muted); font-size:11px; line-height:2; font-style:italic; }
+
+  .review-item {
+    background:var(--surface2); border-radius:10px; padding:12px 14px; border-left:3px solid;
+    animation:slideIn 0.3s ease;
+  }
+  @keyframes slideIn { from{opacity:0;transform:translateX(-8px);}to{opacity:1;transform:translateX(0);} }
+
+  .review-item-meta { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  .interval-badge { font-family:'Syne',sans-serif; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; padding:3px 8px; border-radius:100px; }
+  .from-day { font-size:11px; color:var(--muted); }
+  .review-topics { display:flex; flex-wrap:wrap; gap:5px; }
+  .review-topic { font-size:11px; background:rgba(255,255,255,0.04); border:1px solid var(--border); padding:3px 10px; border-radius:6px; }
+
+  .history-section { margin-top:20px; }
+  .section-label { font-family:'Syne',sans-serif; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:var(--muted); margin-bottom:14px; display:flex; align-items:center; gap:12px; }
+  .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  .history-grid { display:flex; flex-direction:column; gap:10px; }
+  .history-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:border-color 0.2s; }
+  .history-card:hover { border-color:rgba(200,240,74,0.25); }
+  .history-card-header { padding:13px 18px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); }
+  .history-day-num { font-family:'Instrument Serif',serif; font-size:20px; color:var(--accent); line-height:1; }
+  .history-day-label { font-size:11px; color:var(--muted); margin-top:2px; }
+  .history-count { font-size:11px; color:var(--muted); background:var(--surface2); padding:4px 10px; border-radius:100px; }
+  .history-card-body { padding:13px 18px; display:flex; flex-wrap:wrap; gap:7px; }
+  .history-tag { font-size:12px; background:rgba(255,255,255,0.04); border:1px solid var(--border); padding:5px 12px; border-radius:8px; transition:background 0.15s; }
+  .history-tag:hover { background:rgba(255,255,255,0.08); }
+
+  .c1  { border-color:var(--r1);  background:rgba(200,240,74,0.05); }
+  .c1  .interval-badge { background:rgba(200,240,74,0.15); color:var(--r1); }
+  .c3  { border-color:var(--r3);  background:rgba(74,200,240,0.05); }
+  .c3  .interval-badge { background:rgba(74,200,240,0.15); color:var(--r3); }
+  .c7  { border-color:var(--r7);  background:rgba(200,74,240,0.05); }
+  .c7  .interval-badge { background:rgba(200,74,240,0.15); color:var(--r7); }
+  .c14 { border-color:var(--r14); background:rgba(240,74,107,0.05); }
+  .c14 .interval-badge { background:rgba(240,74,107,0.15); color:var(--r14); }
+  .c60 { border-color:var(--r60); background:rgba(240,164,74,0.05); }
+  .c60 .interval-badge { background:rgba(240,164,74,0.15); color:var(--r60); }
+
+  .legend { display:flex; flex-wrap:wrap; gap:10px; padding:12px 16px; border-top:1px solid var(--border); }
+  .legend-item { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--muted); }
+  .legend-dot { width:7px; height:7px; border-radius:50%; }
+
+  .loading-overlay { position:fixed;inset:0;z-index:200;background:rgba(13,13,15,0.88);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px); }
+  .spinner { width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite; }
+  @keyframes spin { to{transform:rotate(360deg);} }
+
+  .toast { position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--accent);color:#0d0d0f;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;padding:11px 22px;border-radius:100px;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:300;white-space:nowrap; }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+  .toast.error { background:var(--danger); color:#fff; }
+
+  .no-history { text-align:center;padding:36px 20px;color:var(--muted);font-size:12px;font-style:italic;line-height:2; }
+
+  /* ULANG HARI INI BANNER */
+  .ulang-banner {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .ulang-header {
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .ulang-title-wrap { display: flex; align-items: center; gap: 10px; }
+
+  .ulang-icon {
+    width: 28px; height: 28px;
+    background: rgba(200,240,74,0.12);
+    border: 1px solid rgba(200,240,74,0.25);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+
+  .ulang-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 700;
+    color: var(--text);
+  }
+
+  .ulang-count {
+    font-size: 11px; color: var(--muted);
+    background: var(--surface2);
+    padding: 4px 12px; border-radius: 100px;
+    white-space: nowrap;
+  }
+
+  .ulang-body { padding: 18px 22px; }
+
+  .ulang-empty {
+    font-size: 13px; color: var(--muted);
+    font-style: italic; text-align: center;
+    padding: 8px 0;
+  }
+
+  .ulang-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .ulang-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    animation: slideIn 0.25s ease;
+  }
+
+  .ulang-num {
+    font-family: 'Instrument Serif', serif;
+    font-size: 15px;
+    color: var(--accent);
+    min-width: 20px;
+    text-align: right;
+  }
+
+  .ulang-topic {
+    font-size: 13px;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .ulang-from {
+    font-size: 10px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  @media (max-width:700px) {
+    .main-grid { grid-template-columns:1fr; }
+    .stats-bar { grid-template-columns:repeat(3,1fr); }
+    .stat-value { font-size:22px; }
+    .login-top, .login-body { padding-left:24px; padding-right:24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginScreen" style="display:none;">
+  <div class="login-box">
+    <div class="login-top">
+      <div class="login-logo">Spaced<span>Mind</span></div>
+      <div class="login-sub">
+        Spaced repetition dengan interval 1 · 3 · 7 · 14 · 60 hari.<br/>
+        Progress tersimpan di cloud — bisa diakses dari device mana saja.
+      </div>
+    </div>
+    <div class="login-body">
+      <div>
+        <div class="field-label">Passphrase kamu</div>
+        <input class="field-input" id="passphraseInput" type="text"
+          placeholder="contoh: belajar-rajin-2024"
+          autocomplete="off" spellcheck="false"
+          onkeydown="if(event.key==='Enter') loginOrRegister()" />
+      </div>
+
+      <div class="login-hint">
+        <strong>Pengguna baru?</strong> Ketik passphrase unik lalu klik masuk — akun otomatis dibuat.<br/>
+        <strong>Sudah punya akun?</strong> Masukkan passphrase yang sama untuk lanjutkan progressmu.<br/>
+        ⚠️ <strong>Simpan passphrase-mu!</strong> Tidak ada recovery jika lupa.
+      </div>
+
+      <div class="login-error" id="loginError"></div>
+
+      <button class="btn-login" id="loginBtn" onclick="loginOrRegister()">
+        Masuk / Daftar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appScreen">
+  <div class="container">
+    <header>
+      <div>
+        <div class="logo">Spaced<span>Mind</span></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:1px;">SPACED REPETITION · 1 · 3 · 7 · 14 · 60</div>
+      </div>
+      <div class="header-right">
+        <div class="user-chip">🔑 <strong id="displayPassphrase"></strong></div>
+        <div class="day-chip">Hari ke&#8209;<strong id="currentDayDisplay">1</strong></div>
+        <button class="btn-small" onclick="logout()">keluar</button>
+        <button class="btn-small" onclick="resetAll()">reset data</button>
+      </div>
+    </header>
+
+    <!-- ULANG HARI INI -->
+    <div class="ulang-banner" id="ulangBanner">
+      <div class="ulang-header">
+        <div class="ulang-title-wrap">
+          <div class="ulang-icon">🔁</div>
+          <div class="ulang-title">Yang Perlu Diulang Hari Ini</div>
+        </div>
+        <div class="ulang-count" id="ulangCount">0 topik</div>
+      </div>
+      <div class="ulang-body">
+        <div class="ulang-list" id="ulangList">
+          <div class="ulang-empty">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-card"><div class="stat-value" id="statTotalDays">0</div><div class="stat-label">Total Hari</div></div>
+      <div class="stat-card"><div class="stat-value" id="statTotalTopics">0</div><div class="stat-label">Total Topik</div></div>
+      <div class="stat-card"><div class="stat-value" id="statTodayReview">0</div><div class="stat-label">Review Hari Ini</div></div>
+    </div>
+
+    <div class="main-grid">
+      <div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-dot"></div><div class="panel-title">Input Topik Baru</div></div>
+          <div class="today-label">Topik yang kamu pelajari hari ini</div>
+          <div class="input-area">
+            <div class="input-tags" id="tagContainer"></div>
+            <div class="add-row">
+              <input type="text" id="topicInput" placeholder="Nama topik atau judul materi..." onkeydown="handleKey(event)" />
+              <button class="btn-add" onclick="addTag()">+ Tambah</button>
+            </div>
+          </div>
+          <div class="submit-area">
+            <button class="btn-submit" id="submitBtn" onclick="submitDay()">✓ &nbsp; Selesai Belajar Hari Ini</button>
+          </div>
+        </div>
+
+        <div class="history-section">
+          <div class="section-label">Riwayat Harian</div>
+          <div class="history-grid" id="historyGrid">
+            <div class="no-history">Belum ada riwayat.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Review Hari Ini</div></div>
+          <div id="reviewList" class="review-list">
+            <div class="review-empty">Review akan muncul setelah beberapa hari berlalu.</div>
+          </div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:var(--r1)"></div>+1 hari</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--r3)"></div>+3 hari</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--r7)"></div>+7 hari</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--r14)"></div>+14 hari</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--r60)"></div>+60 hari</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONSTANTS ────────────────────────────────────────────
+const INTERVALS = [1, 3, 7, 14, 60];
+const INTERVAL_LABELS = {1:'Ulang +1', 3:'Ulang +3', 7:'Ulang +7', 14:'Ulang +14', 60:'Ulang +60'};
+const INTERVAL_CLASS  = {1:'c1', 3:'c3', 7:'c7', 14:'c14', 60:'c60'};
+
+let currentPassphrase = null;
+let state = null;
+let pendingTags = [];
+
+// ── STORAGE ──────────────────────────────────────────────
+function makeKey(pp) {
+  return 'spacedmind-u-' + pp.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9\-_]/g,'').slice(0, 80);
+}
+
+async function cloudGet(key) {
+  try {
+    const res = await window.storage.get(key, true);
+    if (!res) return null;
+    return JSON.parse(res.value);
+  } catch(e) { return null; }
+}
+
+async function cloudSet(key, data) {
+  try {
+    await window.storage.set(key, JSON.stringify(data), true);
+    return true;
+  } catch(e) { return false; }
+}
+
+async function saveCloud() {
+  const ok = await cloudSet(makeKey(currentPassphrase), state);
+  if (!ok) showToast('Gagal menyimpan ke cloud!', true);
+}
+
+// ── AUTH ─────────────────────────────────────────────────
+async function loginOrRegister() {
+  const raw = document.getElementById('passphraseInput').value.trim();
+  if (raw.length < 3) { setLoginError('Passphrase minimal 3 karakter.'); return; }
+
+  document.getElementById('loginBtn').disabled = true;
+  setLoginError('');
+  showLoading(true);
+
+  const key = makeKey(raw);
+  let data = await cloudGet(key);
+  const isNew = !data;
+
+  if (isNew) {
+    data = { currentDay: 1, days: {}, createdAt: Date.now() };
+    const ok = await cloudSet(key, data);
+    if (!ok) {
+      showLoading(false);
+      document.getElementById('loginBtn').disabled = false;
+      setLoginError('Gagal membuat akun. Coba lagi.');
+      return;
+    }
+  }
+
+  currentPassphrase = raw;
+  state = data;
+  try { sessionStorage.setItem('sm_pp', raw); } catch(e) {}
+
+  showLoading(false);
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appScreen').style.display = 'block';
+  document.getElementById('displayPassphrase').textContent = raw;
+  document.getElementById('loginBtn').disabled = false;
+  renderAll();
+  showToast(isNew ? 'Akun baru dibuat! Selamat datang 🎉' : 'Selamat datang kembali!', false);
+}
+
+function setLoginError(msg) {
+  document.getElementById('loginError').textContent = msg;
+}
+
+function logout() {
+  currentPassphrase = null; state = null; pendingTags = [];
+  try { sessionStorage.removeItem('sm_pp'); } catch(e) {}
+  document.getElementById('appScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('passphraseInput').value = '';
+}
+
+async function resetAll() {
+  if (!confirm('Reset semua data progressmu? Ini tidak bisa dibatalkan!')) return;
+  state = { currentDay: 1, days: {}, createdAt: Date.now() };
+  pendingTags = [];
+  await saveCloud();
+  renderAll();
+  showToast('Data direset.', false);
+}
+
+// ── TAGS ─────────────────────────────────────────────────
+function handleKey(e) { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }
+
+function addTag() {
+  const input = document.getElementById('topicInput');
+  const val = input.value.trim();
+  if (!val) return;
+  if (pendingTags.includes(val)) { showToast('Topik sudah ada!', true); return; }
+  pendingTags.push(val);
+  input.value = '';
+  renderTags();
+  input.focus();
+}
+
+function removeTag(idx) { pendingTags.splice(idx, 1); renderTags(); }
+
+function renderTags() {
+  document.getElementById('tagContainer').innerHTML = pendingTags.map((t,i) =>
+    `<div class="tag">${esc(t)}<button class="tag-remove" onclick="removeTag(${i})">×</button></div>`
+  ).join('');
+  document.getElementById('submitBtn').disabled = pendingTags.length === 0;
+}
+
+// ── SUBMIT ────────────────────────────────────────────────
+async function submitDay() {
+  if (!pendingTags.length) return;
+  document.getElementById('submitBtn').disabled = true;
+  showLoading(true);
+
+  const day = state.currentDay;
+  state.days[day] = { topics: [...pendingTags], timestamp: Date.now() };
+  state.currentDay = day + 1;
+  pendingTags = [];
+
+  await saveCloud();
+  showLoading(false);
+  renderAll();
+  showToast(`Hari ${day} tersimpan ☁️`, false);
+}
+
+// ── RENDER ────────────────────────────────────────────────
+function renderAll() {
+  document.getElementById('currentDayDisplay').textContent = state.currentDay;
+  renderTags();
+  renderStats();
+  renderUlang();
+  renderReview();
+  renderHistory();
+}
+
+function renderUlang() {
+  const cur = state.currentDay;
+  const allTopics = [];
+
+  INTERVALS.forEach(interval => {
+    const t = cur - interval;
+    if (state.days[t] && state.days[t].topics.length) {
+      state.days[t].topics.forEach(topic => {
+        allTopics.push({ topic, fromDay: t, interval });
+      });
+    }
+  });
+
+  const countEl = document.getElementById('ulangCount');
+  const listEl  = document.getElementById('ulangList');
+
+  countEl.textContent = allTopics.length + ' topik';
+
+  if (!allTopics.length) {
+    listEl.innerHTML = `<div class="ulang-empty">—</div>`;
+    return;
+  }
+
+  listEl.innerHTML = allTopics.map((item, i) => `
+    <div class="ulang-row">
+      <div class="ulang-num">${i + 1}.</div>
+      <div class="ulang-topic">${esc(item.topic)}</div>
+      <div class="ulang-from">Hari ${item.fromDay} · +${item.interval}hr</div>
+    </div>`).join('');
+}
+
+function renderStats() {
+  const days = Object.keys(state.days).map(Number);
+  let topics = 0;
+  days.forEach(d => topics += state.days[d].topics.length);
+  document.getElementById('statTotalDays').textContent = days.length;
+  document.getElementById('statTotalTopics').textContent = topics;
+  let rev = 0;
+  INTERVALS.forEach(i => { const t = state.currentDay - i; if (state.days[t]) rev += state.days[t].topics.length; });
+  document.getElementById('statTodayReview').textContent = rev;
+}
+
+function renderReview() {
+  const cur = state.currentDay;
+  const items = [];
+  INTERVALS.forEach(interval => {
+    const t = cur - interval;
+    if (state.days[t] && state.days[t].topics.length)
+      items.push({ interval, day: t, topics: state.days[t].topics });
+  });
+  const el = document.getElementById('reviewList');
+  if (!items.length) {
+    el.innerHTML = `<div class="review-empty">Tidak ada review hari ini.<br/>Submit topik dan tunggu intervalnya.</div>`;
+    return;
+  }
+  el.innerHTML = items.map(item => `
+    <div class="review-item ${INTERVAL_CLASS[item.interval]}">
+      <div class="review-item-meta">
+        <div class="interval-badge">${INTERVAL_LABELS[item.interval]}</div>
+        <div class="from-day">dari Hari ${item.day}</div>
+      </div>
+      <div class="review-topics">${item.topics.map(t=>`<div class="review-topic">${esc(t)}</div>`).join('')}</div>
+    </div>`).join('');
+}
+
+function renderHistory() {
+  const el = document.getElementById('historyGrid');
+  const days = Object.keys(state.days).map(Number).sort((a,b)=>b-a);
+  if (!days.length) { el.innerHTML = `<div class="no-history">Belum ada riwayat.<br/>Mulai submit hari pertamamu!</div>`; return; }
+  el.innerHTML = days.map(day => {
+    const { topics } = state.days[day];
+    return `
+      <div class="history-card">
+        <div class="history-card-header">
+          <div>
+            <div class="history-day-num">Hari ${day}</div>
+            <div class="history-day-label">${topics.length} topik dipelajari</div>
+          </div>
+          <div class="history-count">${topics.length} topik</div>
+        </div>
+        <div class="history-card-body">${topics.map(t=>`<div class="history-tag">${esc(t)}</div>`).join('')}</div>
+      </div>`;
+  }).join('');
+}
+
+// ── UTILS ─────────────────────────────────────────────────
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+let _toast;
+function showToast(msg, err) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (err ? ' error' : '');
+  t.classList.add('show');
+  clearTimeout(_toast);
+  _toast = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function showLoading(v) { document.getElementById('loadingOverlay').style.display = v ? 'flex' : 'none'; }
+
+// ── INIT ──────────────────────────────────────────────────
+async function init() {
+  showLoading(true);
+  let saved = null;
+  try { saved = sessionStorage.getItem('sm_pp'); } catch(e) {}
+
+  if (saved) {
+    const data = await cloudGet(makeKey(saved));
+    if (data) {
+      currentPassphrase = saved;
+      state = data;
+      showLoading(false);
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('appScreen').style.display = 'block';
+      document.getElementById('displayPassphrase').textContent = saved;
+      renderAll();
+      return;
+    }
+  }
+
+  showLoading(false);
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+
+init();
+</script>
+</body>
+</html>
