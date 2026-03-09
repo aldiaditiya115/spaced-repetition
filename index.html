@@ -725,6 +725,7 @@ async function submitDay() {
   const day = state.currentDay;
   state.days[day] = { topics: [...pendingTags], timestamp: Date.now() };
   state.currentDay = day + 1;
+  state.lastSubmittedDay = day; // simpan hari terakhir submit
   pendingTags = [];
 
   await saveCloud();
@@ -750,23 +751,26 @@ function renderStats() {
   document.getElementById('statTotalDays').textContent = days.length;
   document.getElementById('statTotalTopics').textContent = topics;
   let rev = 0;
-  INTERVALS.forEach(i => { const t=state.currentDay-i; if(state.days[t]) rev+=state.days[t].topics.length; });
+  const lastSubmitted = state.lastSubmittedDay || 0;
+  INTERVALS.forEach(i => { const t=state.currentDay-i; if(t>0 && t!==lastSubmitted && state.days[t]) rev+=state.days[t].topics.length; });
   document.getElementById('statTodayReview').textContent = rev;
 }
 
 function renderUlang() {
   const cur = state.currentDay;
+  const lastSubmitted = state.lastSubmittedDay || 0;
   const all = [];
+
   INTERVALS.forEach(interval => {
     const t = cur - interval;
-    if (state.days[t] && state.days[t].topics.length)
+    // Skip hari yang baru saja disubmit — reviewnya baru boleh muncul besok
+    if (t > 0 && t !== lastSubmitted && state.days[t] && state.days[t].topics.length)
       state.days[t].topics.forEach(topic => all.push({ topic, fromDay: t, interval }));
   });
 
   document.getElementById('ulangCount').textContent = all.length + ' topik';
-
   const el = document.getElementById('ulangList');
-  if (!all.length) { el.innerHTML = `<div class="ulang-empty">—</div>`; return; }
+  if (!all.length) { el.innerHTML = '<div class="ulang-empty">—</div>'; return; }
 
   el.innerHTML = all.map((item,i) => `
     <div class="ulang-row">
@@ -778,16 +782,18 @@ function renderUlang() {
 
 function renderReview() {
   const cur = state.currentDay;
+  const lastSubmitted = state.lastSubmittedDay || 0;
   const items = [];
+
   INTERVALS.forEach(interval => {
     const t = cur - interval;
-    if (state.days[t] && state.days[t].topics.length)
+    if (t > 0 && t !== lastSubmitted && state.days[t] && state.days[t].topics.length)
       items.push({ interval, day: t, topics: state.days[t].topics });
   });
 
   const el = document.getElementById('reviewList');
   if (!items.length) {
-    el.innerHTML = `<div class="review-empty">Tidak ada review hari ini.</div>`;
+    el.innerHTML = '<div class="review-empty">Tidak ada review hari ini.</div>';
     return;
   }
   el.innerHTML = items.map(item => `
@@ -796,7 +802,7 @@ function renderReview() {
         <div class="interval-badge">${INTERVAL_LABELS[item.interval]}</div>
         <div class="from-day">dari Hari ${item.day}</div>
       </div>
-      <div class="review-topics">${item.topics.map(t=>`<div class="review-topic">${esc(t)}</div>`).join('')}</div>
+      <div class="review-topics">${item.topics.map(t=>'<div class="review-topic">'+esc(t)+'</div>').join('')}</div>
     </div>`).join('');
 }
 
