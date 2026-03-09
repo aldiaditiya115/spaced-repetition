@@ -420,11 +420,30 @@
       </div>
       <div class="header-right">
         <div class="chip">🔑 <strong id="displayPassphrase"></strong></div>
-        <div class="chip day">Hari ke&#8209;<strong id="currentDayDisplay">1</strong> &nbsp;<span id="todayDateDisplay" style="font-size:10px;opacity:0.5;"></span></div>
+        <div class="chip day">Hari ke&#8209;<strong id="currentDayDisplay">1</strong></div>
         <button class="btn-sm" onclick="logout()">keluar</button>
         <button class="btn-sm" onclick="resetAll()">reset data</button>
       </div>
     </header>
+
+    <!-- DATE BANNER -->
+    <div id="dateBanner" style="
+      display:flex; align-items:center; justify-content:space-between;
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:12px; padding:14px 20px; margin-bottom:16px;
+    ">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="font-size:22px;">📅</div>
+        <div>
+          <div id="todayDateDisplay" style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text);"></div>
+          <div id="submittedTodayLabel" style="font-size:11px;color:var(--muted);margin-top:2px;"></div>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;">Hari ke</div>
+        <div style="font-family:'Instrument Serif',serif;font-size:36px;color:var(--accent);line-height:1;" id="dateBannerDay">1</div>
+      </div>
+    </div>
 
     <!-- ULANG HARI INI -->
     <div class="ulang-banner">
@@ -756,8 +775,21 @@ function renderAll() {
   const alreadySubmitted = state.submittedDates && state.submittedDates[today];
 
   document.getElementById('currentDayDisplay').textContent = currentDay;
+  document.getElementById('dateBannerDay').textContent = currentDay;
+
   const dateEl = document.getElementById('todayDateDisplay');
-  if (dateEl) dateEl.textContent = today;
+  if (dateEl) dateEl.textContent = formatDate(today);
+
+  const submittedLabel = document.getElementById('submittedTodayLabel');
+  if (submittedLabel) {
+    if (alreadySubmitted) {
+      submittedLabel.textContent = '✓ Sudah submit hari ini';
+      submittedLabel.style.color = 'var(--accent)';
+    } else {
+      submittedLabel.textContent = 'Belum submit hari ini';
+      submittedLabel.style.color = 'var(--muted)';
+    }
+  }
 
   // Nonaktifkan submit jika sudah submit hari ini
   const submitBtn = document.getElementById('submitBtn');
@@ -870,11 +902,19 @@ function showLoading(v, txt) {
 // ── DATE HELPERS ──────────────────────────────────────────
 function todayStr() {
   const d = new Date();
-  // format YYYY-MM-DD pakai waktu lokal
   const y = d.getFullYear();
   const m = String(d.getMonth()+1).padStart(2,'0');
   const day = String(d.getDate()).padStart(2,'0');
   return `${y}-${m}-${day}`;
+}
+
+function formatDate(str) {
+  // "2026-03-09" → "Senin, 9 Maret 2026"
+  const days  = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const months= ['Januari','Februari','Maret','April','Mei','Juni',
+                  'Juli','Agustus','September','Oktober','November','Desember'];
+  const d = new Date(str + 'T00:00:00');
+  return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 function dateDiff(startStr, endStr) {
