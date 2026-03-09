@@ -748,17 +748,16 @@ async function submitDay() {
 
   const dayNum = dateDiff(state.startDate, today) + 1;
 
-  // Cegah submit lebih dari sekali di hari yang sama
-  if (state.submittedDates && state.submittedDates[today]) {
-    showLoading(false);
-    showToast('Sudah submit hari ini!', true);
-    document.getElementById('submitBtn').disabled = false;
-    return;
-  }
-
   if (!state.submittedDates) state.submittedDates = {};
   state.submittedDates[today] = dayNum;
-  state.days[dayNum] = { topics: [...pendingTags], timestamp: Date.now(), date: today };
+
+  // Append ke topik yang sudah ada di hari ini (jika sudah submit sebelumnya)
+  if (state.days[dayNum]) {
+    state.days[dayNum].topics = [...state.days[dayNum].topics, ...pendingTags];
+    state.days[dayNum].lastUpdated = Date.now();
+  } else {
+    state.days[dayNum] = { topics: [...pendingTags], timestamp: Date.now(), date: today };
+  }
   pendingTags = [];
 
   await saveCloud();
@@ -791,14 +790,9 @@ function renderAll() {
     }
   }
 
-  // Nonaktifkan submit jika sudah submit hari ini
+  // Tombol selalu aktif — bisa submit berkali-kali, topik akan ditambahkan
   const submitBtn = document.getElementById('submitBtn');
-  if (alreadySubmitted) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = '✓  Sudah Submit Hari Ini';
-  } else {
-    submitBtn.textContent = '✓   Selesai Belajar Hari Ini';
-  }
+  submitBtn.textContent = alreadySubmitted ? '+ Tambah Topik Hari Ini' : '✓   Selesai Belajar Hari Ini';
 
   renderTags();
   renderStats(currentDay);
