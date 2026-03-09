@@ -312,6 +312,8 @@
   .c7  .interval-badge { background:rgba(200,74,240,0.15); color:var(--r7); }
   .c14 { border-color:var(--r14); background:rgba(240,74,107,0.05); }
   .c14 .interval-badge { background:rgba(240,74,107,0.15); color:var(--r14); }
+  .c30 { border-color:#4af0a4; background:rgba(74,240,164,0.05); }
+  .c30 .interval-badge { background:rgba(74,240,164,0.15); color:#4af0a4; }
   .c60 { border-color:var(--r60); background:rgba(240,164,74,0.05); }
   .c60 .interval-badge { background:rgba(240,164,74,0.15); color:var(--r60); }
 
@@ -416,7 +418,7 @@
     <header>
       <div>
         <div class="logo-sm">Spaced<span>Mind</span></div>
-        <div style="font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:1px;">SPACED REPETITION · 1 · 3 · 7 · 14 · 60</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:1px;">SPACED REPETITION · 1 · 3 · 7 · 14 · 30 · 60</div>
       </div>
       <div class="header-right">
         <div class="chip">🔑 <strong id="displayPassphrase"></strong></div>
@@ -506,6 +508,7 @@
             <div class="legend-item"><div class="legend-dot" style="background:var(--r3)"></div>+3 hari</div>
             <div class="legend-item"><div class="legend-dot" style="background:var(--r7)"></div>+7 hari</div>
             <div class="legend-item"><div class="legend-dot" style="background:var(--r14)"></div>+14 hari</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#4af0a4"></div>+30 hari</div>
             <div class="legend-item"><div class="legend-dot" style="background:var(--r60)"></div>+60 hari</div>
           </div>
         </div>
@@ -520,9 +523,9 @@
 <script>
 // ── CONSTANTS ─────────────────────────────────────────────
 const JSONBIN_BASE = 'https://api.jsonbin.io/v3';
-const INTERVALS    = [1, 3, 7, 14, 60];
-const INTERVAL_LABELS = {1:'Ulang +1', 3:'Ulang +3', 7:'Ulang +7', 14:'Ulang +14', 60:'Ulang +60'};
-const INTERVAL_CLASS  = {1:'c1', 3:'c3', 7:'c7', 14:'c14', 60:'c60'};
+const INTERVALS    = [1, 3, 7, 14, 30, 60];
+const INTERVAL_LABELS = {1:'Ulang +1', 3:'Ulang +3', 7:'Ulang +7', 14:'Ulang +14', 30:'Ulang +30', 60:'Ulang +60'};
+const INTERVAL_CLASS  = {1:'c1', 3:'c3', 7:'c7', 14:'c14', 30:'c30', 60:'c60'};
 
 let API_KEY       = '';
 let currentUser   = null; // { passphrase, binId }
