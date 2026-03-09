@@ -420,7 +420,7 @@
       </div>
       <div class="header-right">
         <div class="chip">🔑 <strong id="displayPassphrase"></strong></div>
-        <div class="chip day">Hari ke&#8209;<strong id="currentDayDisplay">1</strong></div>
+        <div class="chip day">Hari ke&#8209;<strong id="currentDayDisplay">1</strong> &nbsp;<span id="todayDateDisplay" style="font-size:10px;opacity:0.5;"></span></div>
         <button class="btn-sm" onclick="logout()">keluar</button>
         <button class="btn-sm" onclick="resetAll()">reset data</button>
       </div>
@@ -630,7 +630,7 @@ async function loginOrRegister() {
       } else {
         // brand new user
         isNew = true;
-        state = { currentDay: 1, days: {}, createdAt: Date.now() };
+        state = { startDate: null, submittedDates: {}, days: {}, createdAt: Date.now() };
         showLoading(true, 'Membuat akun baru...');
         binId = await jbCreate(state);
         currentUser.binId = binId;
@@ -685,7 +685,7 @@ function logout() {
 async function resetAll() {
   if (!confirm('Reset semua data progressmu? Tidak bisa dibatalkan!')) return;
   showLoading(true, 'Mereset data...');
-  state = { currentDay: 1, days: {}, createdAt: Date.now() };
+  state = { startDate: null, submittedDates: {}, days: {}, createdAt: Date.now() };
   pendingTags = [];
   await saveCloud();
   showLoading(false);
@@ -722,49 +722,75 @@ async function submitDay() {
   document.getElementById('submitBtn').disabled = true;
   showLoading(true, 'Menyimpan ke cloud...');
 
-  const day = state.currentDay;
-  state.days[day] = { topics: [...pendingTags], timestamp: Date.now() };
-  state.currentDay = day + 1;
-  state.lastSubmittedDay = day; // simpan hari terakhir submit
+  const today = todayStr();
+
+  // Jika belum ada startDate, set sekarang sebagai Hari 1
+  if (!state.startDate) state.startDate = today;
+
+  const dayNum = dateDiff(state.startDate, today) + 1;
+
+  // Cegah submit lebih dari sekali di hari yang sama
+  if (state.submittedDates && state.submittedDates[today]) {
+    showLoading(false);
+    showToast('Sudah submit hari ini!', true);
+    document.getElementById('submitBtn').disabled = false;
+    return;
+  }
+
+  if (!state.submittedDates) state.submittedDates = {};
+  state.submittedDates[today] = dayNum;
+  state.days[dayNum] = { topics: [...pendingTags], timestamp: Date.now(), date: today };
   pendingTags = [];
 
   await saveCloud();
   showLoading(false);
   renderAll();
-  showToast(`Hari ${day} tersimpan ☁️`, false);
+  showToast(`Hari ${dayNum} tersimpan ☁️`, false);
 }
 
 // ── RENDER ────────────────────────────────────────────────
 function renderAll() {
-  document.getElementById('currentDayDisplay').textContent = state.currentDay;
+  const today = todayStr();
+  // Hitung hari saat ini berdasarkan tanggal
+  const currentDay = state.startDate ? dateDiff(state.startDate, today) + 1 : 1;
+  const alreadySubmitted = state.submittedDates && state.submittedDates[today];
+
+  document.getElementById('currentDayDisplay').textContent = currentDay;
+  const dateEl = document.getElementById('todayDateDisplay');
+  if (dateEl) dateEl.textContent = today;
+
+  // Nonaktifkan submit jika sudah submit hari ini
+  const submitBtn = document.getElementById('submitBtn');
+  if (alreadySubmitted) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = '✓  Sudah Submit Hari Ini';
+  } else {
+    submitBtn.textContent = '✓   Selesai Belajar Hari Ini';
+  }
+
   renderTags();
-  renderStats();
-  renderUlang();
-  renderReview();
+  renderStats(currentDay);
+  renderUlang(currentDay);
+  renderReview(currentDay);
   renderHistory();
 }
 
-function renderStats() {
+function renderStats(currentDay) {
   const days = Object.keys(state.days).map(Number);
   let topics = 0;
   days.forEach(d => topics += state.days[d].topics.length);
   document.getElementById('statTotalDays').textContent = days.length;
   document.getElementById('statTotalTopics').textContent = topics;
   let rev = 0;
-  const lastSubmitted = state.lastSubmittedDay || 0;
-  INTERVALS.forEach(i => { const t=state.currentDay-i; if(t>0 && t!==lastSubmitted && state.days[t]) rev+=state.days[t].topics.length; });
+  INTERVALS.forEach(i => { const t = currentDay - i; if(t > 0 && state.days[t]) rev += state.days[t].topics.length; });
   document.getElementById('statTodayReview').textContent = rev;
 }
 
-function renderUlang() {
-  const cur = state.currentDay;
-  const lastSubmitted = state.lastSubmittedDay || 0;
+function renderUlang(currentDay) {
   const all = [];
-
   INTERVALS.forEach(interval => {
-    const t = cur - interval;
-    // Skip hari yang baru saja disubmit — reviewnya baru boleh muncul besok
-    if (t > 0 && t !== lastSubmitted && state.days[t] && state.days[t].topics.length)
+    const t = currentDay - interval;
+    if (t > 0 && state.days[t] && state.days[t].topics.length)
       state.days[t].topics.forEach(topic => all.push({ topic, fromDay: t, interval }));
   });
 
@@ -780,14 +806,11 @@ function renderUlang() {
     </div>`).join('');
 }
 
-function renderReview() {
-  const cur = state.currentDay;
-  const lastSubmitted = state.lastSubmittedDay || 0;
+function renderReview(currentDay) {
   const items = [];
-
   INTERVALS.forEach(interval => {
-    const t = cur - interval;
-    if (t > 0 && t !== lastSubmitted && state.days[t] && state.days[t].topics.length)
+    const t = currentDay - interval;
+    if (t > 0 && state.days[t] && state.days[t].topics.length)
       items.push({ interval, day: t, topics: state.days[t].topics });
   });
 
@@ -842,6 +865,23 @@ function showToast(msg, err) {
 function showLoading(v, txt) {
   document.getElementById('loadingOverlay').style.display = v ? 'flex' : 'none';
   if (txt) document.getElementById('loadingText').textContent = txt;
+}
+
+// ── DATE HELPERS ──────────────────────────────────────────
+function todayStr() {
+  const d = new Date();
+  // format YYYY-MM-DD pakai waktu lokal
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+
+function dateDiff(startStr, endStr) {
+  // Hitung selisih hari antara dua string YYYY-MM-DD
+  const s = new Date(startStr + 'T00:00:00');
+  const e = new Date(endStr   + 'T00:00:00');
+  return Math.floor((e - s) / 86400000);
 }
 
 // ── INIT ──────────────────────────────────────────────────
